@@ -14,16 +14,19 @@ buildscript {
 	dependencies {
 		classpath "net.minecraftforge.gradle:ForgeGradle:${forgegradleVersion}"
 		classpath "org.spongepowered:mixingradle:${mixingradleVersion}"
-		classpath "com.github.jengelman.gradle.plugins:shadow:${shadowVersion}"
 	}
 }
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 version project.modVersion
 group project.modGroup
+
+configurations {
+	embed
+	compile.extendsFrom(embed)
+}
 
 compileJava {
 	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
@@ -36,6 +39,7 @@ minecraft {
 			workingDirectory project.file('run')
 			property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 			property 'forge.logging.console.level', 'debug'
+			property 'fml.coreMods.load', 'com.gamesense.mixin.GameSenseMixinLoader'
 		}
 	}
 	accessTransformer = file('src/main/resources/gamesense_at.cfg')
@@ -67,7 +71,7 @@ repositories {
 
 dependencies {
 	minecraft("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}")
-	shadow("org.spongepowered:mixin:${mixinVersion}") {
+	compile("org.spongepowered:mixin:${mixinVersion}") {
 		exclude module: 'launchwrapper'
 		exclude module: 'guava'
 		exclude module: 'gson'
@@ -76,12 +80,12 @@ dependencies {
 	annotationProcessor("org.spongepowered:mixin:${mixinProcessor}:processor") {
 		exclude module: 'gson'
 	}
-	shadow("com.github.ZeroMemes:Alpine:${alpineVersion}")
-	shadow("net.jodah:typetools:${typetoolsVersion}")
-	shadow("com.googlecode.json-simple:json-simple:${jsonVersion}")
-	shadow("club.minnced:java-discord-rpc:${discordVersion}")
-	shadow("com.lukflug:panelstudio:${psVersion}")
-	shadow("com.lukflug:panelstudio-mc12:${psmcVersion}")
+	compile("com.github.ZeroMemes:Alpine:${alpineVersion}")
+	compile("net.jodah:typetools:${typetoolsVersion}")
+	compile("com.googlecode.json-simple:json-simple:${jsonVersion}")
+	compile("club.minnced:java-discord-rpc:${discordVersion}")
+	compile("com.lukflug:panelstudio:${psVersion}")
+	compile("com.lukflug:panelstudio-mc12:${psmcVersion}")
 }
 
 processResources {
@@ -100,25 +104,13 @@ processResources {
 	rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
-shadowJar {
-    configurations = [project.configurations.shadow]
-    exclude("dummyThing")
-    exclude("LICENSE.txt")
-    setClassifier("release")
-}
-
 mixin {
 	defaultObfuscationEnv 'searge'
 	add sourceSets.main, 'mixins.gamesense.refmap.json'
 }
 
-reobf {
-	shadowJar {
-		classpath = sourceSets.main.compileClasspath
-	}
-}
-
 jar {
+	from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
 	manifest {
 		attributes(
 			'MixinConfigs': 'mixins.gamesense.json',
@@ -130,7 +122,4 @@ jar {
 			'FMLAT': 'gamesense_at.cfg'
 		)
 	}
-}
-
-jar.dependsOn(shadowJar) 
-
+} 

@@ -1,13 +1,16 @@
 package com.gamesense.mixin;
 
-import com.gamesense.client.GameSense;
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
-import javax.annotation.Nullable;
-import java.util.Map;
+import com.gamesense.client.GameSense;
+
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 @IFMLLoadingPlugin.Name(GameSense.MODNAME)
 @IFMLLoadingPlugin.MCVersion("1.12.2")
