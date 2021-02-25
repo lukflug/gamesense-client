@@ -25,11 +25,6 @@ apply plugin: 'com.github.johnrengelman.shadow'
 version project.modVersion
 group project.modGroup
 
-configurations {
-    embed
-    compile.extendsFrom(embed)
-}
-
 compileJava {
 	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 }
@@ -124,7 +119,6 @@ reobf {
 }
 
 jar {
-	from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
 	manifest {
 		attributes(
 			'MixinConfigs': 'mixins.gamesense.json',
