@@ -1,3 +1,4 @@
+
 buildscript {
 	repositories {
 		jcenter()
@@ -11,9 +12,9 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
-		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-		classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+		classpath "net.minecraftforge.gradle:ForgeGradle:${forgegradleVersion}"
+		classpath "org.spongepowered:mixingradle:${mixingradleVersion}"
+		classpath "com.github.jengelman.gradle.plugins:shadow:${shadowVersion}"
 	}
 }
 
@@ -34,7 +35,7 @@ compileJava {
 }
 
 minecraft {
-	mappings channel: 'stable', version: '39-1.12'
+	mappings channel: 'stable', version: project.mcpVersion
 	runs {
 		client {
 			workingDirectory project.file('run')
@@ -42,12 +43,7 @@ minecraft {
 			property 'forge.logging.console.level', 'debug'
 		}
 	}
-	/*version = project.forgeVersion
-	runDir = 'run'
-	mappings = project.mcpVersion
-	coreMod = 'com.gamesense.mixin.GameSenseMixinLoader'
-	makeObfSourceJar = false*/
-	//coreMod = 'com.gamesense.mixin.GameSenseMixinLoader'
+	accessTransformer = file('src/main/resources/gamesense_at.cfg')
 }
 
 repositories {
@@ -75,19 +71,22 @@ repositories {
 }
 
 dependencies {
-	minecraft('net.minecraftforge:forge:1.12.2-14.23.5.2854')
-	shadow('org.spongepowered:mixin:0.7.4-SNAPSHOT') {
+	minecraft("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}")
+	shadow("org.spongepowered:mixin:${mixinVersion}") {
 		exclude module: 'launchwrapper'
 		exclude module: 'guava'
 		exclude module: 'gson'
 		exclude module: 'commons-io'
 	}
-	shadow('com.github.ZeroMemes:Alpine:1.5')
-	shadow('net.jodah:typetools:0.5.0')
-	shadow('com.googlecode.json-simple:json-simple:1.1.1')
-	shadow('club.minnced:java-discord-rpc:2.0.1')
-	shadow('com.lukflug:panelstudio:0.1.8')
-	shadow('com.lukflug:panelstudio-mc12:0.1.8')
+	annotationProcessor("org.spongepowered:mixin:${mixinProcessor}:processor") {
+		exclude module: 'gson'
+	}
+	shadow("com.github.ZeroMemes:Alpine:${alpineVersion}")
+	shadow("net.jodah:typetools:${typetoolsVersion}")
+	shadow("com.googlecode.json-simple:json-simple:${jsonVersion}")
+	shadow("club.minnced:java-discord-rpc:${discordVersion}")
+	shadow("com.lukflug:panelstudio:${psVersion}")
+	shadow("com.lukflug:panelstudio-mc12:${psmcVersion}")
 }
 
 processResources {
